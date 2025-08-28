@@ -1,7 +1,16 @@
+const mongoose = require("mongoose");
+const express = require("express");
 const cron = require("node-cron");
 const User = require("./models/User");
 const Medicine = require("./models/Medicine");
 const sendReminder = require("./utils/mailer");
+const dotenv = require("dotenv");
+dotenv.config();
+
+const app = express();
+app.use(express.json());
+
+console.log("Email User:", process.env.EMAIL_USER);
 
 // Run every minute (for demo). Change to "0 * * * *" for hourly or "0 9 * * *" for daily at 9 AM
 cron.schedule("* * * * *", async () => {
@@ -21,3 +30,18 @@ cron.schedule("* * * * *", async () => {
     console.error("Error sending reminders:", err);
   }
 });
+
+mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+.then(() => console.log("✅ MongoDB Atlas Connected"))
+.catch(err => console.error("❌ Connection error:", err));
+
+app.get("/", (req, res) => {
+    res.send("MediReminder connected to MongoDB ✅");
+});
+
+// Start server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
