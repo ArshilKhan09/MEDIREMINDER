@@ -2,87 +2,157 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediReminder - Dashboard</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="dashboard">
-  <div class="dashboard-container">
-    <h2>💊 Medicare Dashboard</h2>
+<body>
+  <h1>MediReminder Dashboard</h1>
+
+  <!-- Medicines Section -->
+  <section id="medicines">
+    <h2>📋 My Medicines</h2>
     <form id="medicineForm">
-      <input type="text" name="name" placeholder="Medicine Name" required>
-      <input type="text" name="dosage" placeholder="Dosage">
-      <input type="time" name="time" required>
-      <button type="submit">Add Medicine</button>
+      <input type="text" id="medicineName" placeholder="Medicine name" required>
+      <input type="time" id="medicineTime" required>
+      <input type="text" id="medicineDosage" placeholder="Dosage (optional)">
+      <button type="submit">➕ Add Medicine</button>
+    </form>
+    <ul id="medicineList"></ul>
+  </section>
+
+  <hr>
+
+  <!-- Profile Section -->
+  <section id="profile">
+    <h2>👤 My Profile</h2>
+    <p><strong>Username:</strong> <span id="profileUsername"></span></p>
+    <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+
+    <h3>Update Profile</h3>
+    <form id="updateProfileForm">
+      <input type="email" id="updateEmail" placeholder="New Email">
+      <input type="password" id="updatePassword" placeholder="New Password">
+      <button type="submit">Update</button>
     </form>
 
-    <h3>Your Medicines</h3>
-    <ul id="medicineList"></ul>
-  </div>
+    <button id="logoutBtn">🚪 Logout</button>
+  </section>
 
   <script>
     const API_URL = "http://localhost:5000/api";
+    const token = localStorage.getItem("token");
+    if (!token) window.location.href = "index.html";
 
+    // ---------- Medicines ----------
     async function fetchMedicines() {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`${API_URL}/medicine`, {
-        headers: { "x-auth-token": token }
-      });
-      const meds = await res.json();
-      const list = document.getElementById("medicineList");
-      list.innerHTML = meds.map(m => 
-        <li><span>${m.name}</span> - ${m.time} (${m.dosage || "no dosage"})
-        <button onclick="deleteMedicine('${m._id}')">🗑 Delete</button>
-        </li>
-      ).join("");
+      try {
+        const res = await fetch(`${API_URL}/medicines`, {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            "x-auth-token": token
+          },
+           body: JSON.stringify({ name, time, dosage })
+        });
+        const meds = await res.json();
+        const list = document.getElementById("medicineList");
+        list.innerHTML = meds.map(m => `
+          <li>
+            <span>${m.name}</span> - ${m.time} (${m.dosage || "no dosage"})
+            <button onclick="deleteMedicine('${m._id}')">🗑 Delete</button>
+          </li>
+        `).join("");
+      } catch (err) {
+        console.error(err);
+      }
     }
-
-    async function deleteMedicine(id) {
-  const token = localStorage.getItem("token");
-  await fetch(`${API_URL}/medicine/${id}`, {
-    method: "DELETE",
-    headers: { "x-auth-token": token }
-  });
-  fetchMedicines();
-}
 
     document.getElementById("medicineForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const name = e.target.name.value;
-      const dosage = e.target.dosage.value;
-      const time = e.target.time.value;
-      const token = localStorage.getItem("token");
+      const name = document.getElementById("medicineName").value;
+      const time = document.getElementById("medicineTime").value;
+      const dosage = document.getElementById("medicineDosage").value;
 
-      await fetch(`${API_URL}/medicine`, {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "x-auth-token": token
-        },
-        body: JSON.stringify({ name, dosage, time })
-      });
-      fetchMedicines();
-      e.target.reset();
+      try {
+        const res = await fetch(`${API_URL}/medicines`, {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            "x-auth-token": token
+          },
+          body: JSON.stringify({ name, time, dosage })
+        });
+        if (res.ok) {
+          document.getElementById("medicineForm").reset();
+          fetchMedicines();
+        } else {
+          alert("❌ Failed to add medicine");
+        }
+      } catch (err) {
+        console.error(err);
+      }
     });
 
-    if (Notification.permission !== "granted") {
-  Notification.requestPermission();
-}
-
-// Local reminder check
-setInterval(() => {
-  const now = new Date();
-  const currentTime = now.toTimeString().slice(0,5);
-  document.querySelectorAll("#medicineList li").forEach(li => {
-    if (li.innerText.includes(currentTime)) {
-      new Notification("💊 Medicine Reminder", {
-        body: "Time to take your medicine!",
-        icon: "https://img.icons8.com/color/48/pill.png"
-      });
+    async function deleteMedicine(id) {
+      try {
+        await fetch(`${API_URL}/medicines/${id}`, {
+          method: "DELETE",
+          headers: { "x-auth-token": token }
+        });
+        fetchMedicines();
+      } catch (err) {
+        console.error(err);
+      }
     }
-  });
-}, 60000);
 
+    // ---------- Profile ----------
+    async function fetchProfile() {
+      try {
+        const res = await fetch(`${API_URL}/auth/me`, {
+          headers: { "x-auth-token": token }
+        });
+        const user = await res.json();
+        document.getElementById("profileUsername").innerText = user.username;
+        document.getElementById("profileEmail").innerText = user.email;
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    document.getElementById("updateProfileForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("updateEmail").value;
+      const password = document.getElementById("updatePassword").value;
+
+      try {
+        const res = await fetch(`${API_URL}/auth/update`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "x-auth-token": token
+          },
+          body: JSON.stringify({ email, password })
+        });
+        if (res.ok) {
+          alert("✅ Profile updated!");
+          fetchProfile();
+        } else {
+          alert("❌ Failed to update profile");
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.removeItem("token");
+      window.location.href = "index.html";
+    });
+
+    // Initial load
     fetchMedicines();
+    fetchProfile();
   </script>
 </body>
 </html>

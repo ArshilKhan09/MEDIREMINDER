@@ -381,82 +381,171 @@ form.sign-up-form{
     }
 }
 
-/* ============================
-   DASHBOARD PAGE STYLES
-============================ */
-body.dashboard {
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%);
-    min-height: 100vh;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: #333;
+/* ===== Reset & Base ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", "Segoe UI", Tahoma, sans-serif;
 }
 
-.dashboard-container {
-    background: #fff;
-    margin-top: 50px;
-    padding: 2rem;
-    border-radius: 15px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-    width: 90%;
-    max-width: 600px;
+body {
+  background: #f9fbfd;
+  color: #2c3e50;
+  line-height: 1.6;
+  padding: 20px;
 }
 
-.dashboard-container h2 {
-    text-align: center;
-    color: #4481eb;
-    margin-bottom: 20px;
+/* ===== Page Title ===== */
+h1 {
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #1a237e;
 }
 
-#medicineForm {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 20px;
+/* ===== Section Cards ===== */
+section {
+  background: #ffffff;
+  padding: 25px;
+  margin: 20px auto;
+  border-radius: 16px;
+  max-width: 850px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s;
 }
 
-#medicineForm input, 
-#medicineForm button {
-    flex: 1 1 calc(50% - 10px);
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    font-size: 1rem;
+section:hover {
+  transform: translateY(-2px);
 }
 
-#medicineForm button {
-    background: #4481eb;
-    color: #fff;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.3s ease;
+section h2 {
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+  color: #1565c0;
+  border-left: 5px solid #42a5f5;
+  padding-left: 10px;
 }
 
-#medicineForm button:hover {
-    background: #366ed8;
+/* ===== Forms ===== */
+form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
+form input {
+  flex: 1;
+  padding: 12px 14px;
+  border: 1px solid #d0d7de;
+  border-radius: 10px;
+  outline: none;
+  font-size: 0.95rem;
+  transition: border 0.3s, box-shadow 0.3s;
+}
+
+form input:focus {
+  border-color: #42a5f5;
+  box-shadow: 0 0 5px rgba(66, 165, 245, 0.4);
+}
+
+form button {
+  padding: 12px 18px;
+  background: #42a5f5;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+form button:hover {
+  background: #1e88e5;
+}
+
+/* ===== Medicine List ===== */
 #medicineList {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  list-style: none;
 }
 
 #medicineList li {
-    background: #f0f4ff;
-    margin: 10px 0;
-    padding: 12px;
-    border-radius: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  background: #f1f5fb;
+  margin: 8px 0;
+  padding: 14px 18px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
 }
 
 #medicineList li span {
-    font-weight: bold;
-    color: #4481eb;
+  font-weight: 500;
+  color: #37474f;
+}
+
+#medicineList button {
+  background: #ef5350;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.3s;
+}
+
+#medicineList button:hover {
+  background: #c62828;
+}
+
+/* ===== Profile Section ===== */
+#profile p {
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+#profile h3 {
+  margin: 18px 0 12px;
+  font-size: 1.2rem;
+  color: #424242;
+}
+
+/* ===== Buttons (Logout, Update) ===== */
+#updateProfileForm button {
+  background: #66bb6a;
+}
+
+#updateProfileForm button:hover {
+  background: #388e3c;
+}
+
+#logoutBtn {
+  margin-top: 20px;
+  padding: 12px 18px;
+  background: #ff9800;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#logoutBtn:hover {
+  background: #e65100;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 600px) {
+  form {
+    flex-direction: column;
+  }
+
+  form input, form button {
+    width: 100%;
+  }
 }

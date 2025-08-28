@@ -1,77 +1,98 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+const User = require("../models/User"); // make sure you have models/User.js
 
 const router = express.Router();
 
-// Signup
+// @route   POST /api/auth/signup
 router.post("/signup", async (req, res) => {
-  const { username, email, password } = req.body;
+  console.log("📥 Signup request body:", req.body); // DEBUG LINE
   try {
-    let user = await User.findOne({ email });
-    if (user) return res.status(400).json({ msg: "User already exists" });
+    const { username, email, password } = req.body;
 
-    const hashed = await bcrypt.hash(password, 10);
-    user = new User({ username, email, password: hashed });
+    if (!username || !email || !password) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    let user = await User.findOne({ email });
+    if (user) {
+      return res.status(400).json({ error: "User already exists" });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    user = new User({ username, email, password: hashedPassword });
     await user.save();
 
-    res.json({ msg: "User registered successfully" });
+    res.json({ message: "User registered successfully ✅" });
   } catch (err) {
-    res.status(500).send("Server Error");
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
   }
 });
 
-// Login
+// @route   POST /api/auth/login
 router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
   try {
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ msg: "Invalid credentials" });
+    const { email, password } = req.body;
+
+    let user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ error: "Invalid credentials" });
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ msg: "Invalid credentials" });
+    if (!isMatch) {
+      return res.status(400).json({ error: "Invalid credentials" });
+    }
 
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
     res.json({ token });
   } catch (err) {
-    res.status(500).send("Server Error");
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// @route   GET /api/auth/me
+router.get("/me", async (req, res) => {
+  try {
+    const token = req.header("x-auth-token");
+    if (!token) return res.status(401).json({ error: "No token, authorization denied" });
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id).select("-password");
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// @route   PUT /api/auth/update
+router.put("/update", async (req, res) => {
+  try {
+    const token = req.header("x-auth-token");
+    if (!token) return res.status(401).json({ error: "No token, authorization denied" });
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    let updateData = {};
+
+    if (req.body.email) updateData.email = req.body.email;
+    if (req.body.password) {
+      const salt = await bcrypt.genSalt(10);
+      updateData.password = await bcrypt.hash(req.body.password, salt);
+    }
+
+    const user = await User.findByIdAndUpdate(decoded.id, updateData, { new: true }).select("-password");
+    res.json(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
   }
 });
 
 module.exports = router;
-
-// Get user profile
-router.get("/me", async (req, res) => {
-  try {
-    const token = req.header("x-auth-token");
-    if (!token) return res.status(401).json({ msg: "No token" });
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    const user = await User.findById(decoded.id).select("-password");
-    res.json(user);
-  } catch (err) {
-    res.status(500).send("Server Error");
-  }
-});
-
-// Update user email or password
-router.put("/update", async (req, res) => {
-  try {
-    const token = req.header("x-auth-token");
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    const { email, password } = req.body;
-    let updateData = {};
-    if (email) updateData.email = email;
-    if (password) {
-      const hashed = await bcrypt.hash(password, 10);
-      updateData.password = hashed;
-    }
-
-    const user = await User.findByIdAndUpdate(decoded.id, updateData, { new: true });
-    res.json({ msg: "Profile updated", user });
-  } catch (err) {
-    res.status(500).send("Server Error");
-  }
-});

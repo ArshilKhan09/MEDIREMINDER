@@ -1,14 +1,28 @@
-const mongoose = require("mongoose");
 const express = require("express");
+const mongoose = require("mongoose");
+const app = express();
 const cron = require("node-cron");
 const User = require("./models/User");
 const Medicine = require("./models/Medicine");
 const sendReminder = require("./utils/mailer");
 const dotenv = require("dotenv");
+const path = require("path");
+
+const cors = require("cors");
+
+
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+const authRoutes = require("./routes/auth");
+app.use("/api/auth", authRoutes);
+
 dotenv.config();
 
-const app = express();
-app.use(express.json());
+
+
+app.use(express.static(path.join(__dirname, "../Frontend")));
 
 console.log("Email User:", process.env.EMAIL_USER);
 

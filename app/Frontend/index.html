@@ -1,74 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-<link rel="stylesheet" href="style.css">
-    <title>Sign In & Sign Up Form</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <title>Sign In & Sign Up Form</title>
 </head>
 <body>
-    <div class="container">
-        <div class="forms-container">
-            <div class="signin-signup">
-               <!-- Sign In Form -->
-<form id="loginForm" class="sign-in-form">
-  <h2 class="title">Sign in</h2>
-  <div class="input-field">
-    <i class="fas fa-envelope"></i>
-    <input type="email" name="email" placeholder="Email" required>
-  </div>
-  <div class="input-field">
-    <i class="fas fa-lock"></i>
-    <input type="password" name="password" placeholder="Password" required>
-  </div>
-  <input type="submit" value="Login" class="btn solid">
-</form>
+  <div class="container">
+    <div class="forms-container">
+      <div class="signin-signup">
 
-<!-- Sign Up Form -->
-<form id="signupForm" class="sign-up-form">
-  <h2 class="title">Sign up</h2>
-  <div class="input-field">
-    <i class="fas fa-user"></i>
-    <input type="text" name="username" placeholder="Username" required>
-  </div>
-  <div class="input-field">
-    <i class="fas fa-envelope"></i>
-    <input type="email" name="email" placeholder="Email" required>
-  </div>
-  <div class="input-field">
-    <i class="fas fa-lock"></i>
-    <input type="password" name="password" placeholder="Password" required>
-  </div>
-  <input type="submit" value="Sign up" class="btn solid">
-</form>
+        <!-- Sign In Form -->
+        <form id="loginForm" class="sign-in-form">
+          <h2 class="title">Sign in</h2>
+          <div class="input-field">
+            <i class="fas fa-envelope"></i>
+            <input type="email" id="loginEmail" name="email" placeholder="Email" required>
+          </div>
+          <div class="input-field">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="loginPassword" name="password" placeholder="Password" required>
+          </div>
+          <input type="submit" value="Login" class="btn solid">
+        </form>
 
-            </div>
-        </div>
-        <div class="panels-container">
-            <div class="panel left-panel">
-                <div class="content">
-                    <h3>New Here ?</h3>
-                    <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Modi quod error totam?</p>
-                    <button class="btn transparent" id="sign-up-btn">Sign up</button>
-                </div>
+        <!-- Sign Up Form -->
+        <form id="signupForm" class="sign-up-form">
+          <h2 class="title">Sign up</h2>
+          <div class="input-field">
+            <i class="fas fa-user"></i>
+            <input type="text" id="signupUsername" name="username" placeholder="Username" required>
+          </div>
+          <div class="input-field">
+            <i class="fas fa-envelope"></i>
+            <input type="email" id="signupEmail" name="email" placeholder="Email" required>
+          </div>
+          <div class="input-field">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="signupPassword" name="password" placeholder="Password" required>
+          </div>
+          <input type="submit" value="Sign up" class="btn solid">
+        </form>
 
-                <img src="img/Log.svg" class="image" alt="">
-            </div>
-
-             <div class="panel right-panel">
-                <div class="content">
-                    <h3>One of us ?</h3>
-                    <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Modi quod error totam?</p>
-                    <button class="btn transparent" id="sign-in-btn">Sign in</button>
-                </div>
-
-                <img src="img/Med.svg" class="image" alt="">
-            </div>
-        </div>
+      </div>
     </div>
 
-    <script src="app.js"></script>
+    <div class="panels-container">
+      <div class="panel left-panel">
+        <div class="content">
+          <h3>New Here ?</h3>
+          <p>Register now to start tracking your medicines easily.</p>
+          <button class="btn transparent" id="sign-up-btn">Sign up</button>
+        </div>
+        <img src="img/Log.svg" class="image" alt="">
+      </div>
+
+      <div class="panel right-panel">
+        <div class="content">
+          <h3>Already registered?</h3>
+          <p>Login to access your dashboard and reminders.</p>
+          <button class="btn transparent" id="sign-in-btn">Sign in</button>
+        </div>
+        <img src="img/Med.svg" class="image" alt="">
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ Use external JS file -->
+  <script src="app.js"></script>
 </body>
 </html>

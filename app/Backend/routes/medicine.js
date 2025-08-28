@@ -1,35 +1,52 @@
 const express = require("express");
-const Medicine = require("../models/Medicine");
-const auth = require("../middleware/auth");
-
 const router = express.Router();
+const auth = require("../middleware/auth");  // middleware to check token
+const Medicine = require("../models/Medicine");
 
 // Add medicine
 router.post("/", auth, async (req, res) => {
-  const { name, dosage, time } = req.body;
   try {
-    const med = new Medicine({ userId: req.user.id, name, dosage, time });
-    await med.save();
-    res.json(med);
+    const { name, time, dosage } = req.body;
+
+    if (!name || !time) {
+      return res.status(400).json({ error: "Name and time are required" });
+    }
+
+    const medicine = new Medicine({
+      user: req.user.id,
+      name,
+      time,
+      dosage
+    });
+
+    await medicine.save();
+    res.json(medicine);
   } catch (err) {
-    res.status(500).send("Server Error");
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
   }
 });
 
 // Get medicines
 router.get("/", auth, async (req, res) => {
-  const meds = await Medicine.find({ userId: req.user.id });
-  res.json(meds);
+  try {
+    const meds = await Medicine.find({ user: req.user.id });
+    res.json(meds);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
 });
-
-module.exports = router;
 
 // Delete medicine
 router.delete("/:id", auth, async (req, res) => {
   try {
-    await Medicine.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
-    res.json({ msg: "Medicine deleted" });
+    await Medicine.findByIdAndDelete(req.params.id);
+    res.json({ message: "Medicine deleted" });
   } catch (err) {
-    res.status(500).send("Server Error");
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
   }
 });
+
+module.exports = router;
