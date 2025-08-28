@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="dashboard">
+  <div class="dashboard-container">
+    <h2>💊 Medicare Dashboard</h2>
+    <form id="medicineForm">
+      <input type="text" name="name" placeholder="Medicine Name" required>
+      <input type="text" name="dosage" placeholder="Dosage">
+      <input type="time" name="time" required>
+      <button type="submit">Add Medicine</button>
+    </form>
+
+    <h3>Your Medicines</h3>
+    <ul id="medicineList"></ul>
+  </div>
+
+  <script>
+    const API_URL = "http://localhost:5000/api";
+
+    async function fetchMedicines() {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/medicine`, {
+        headers: { "x-auth-token": token }
+      });
+      const meds = await res.json();
+      const list = document.getElementById("medicineList");
+      list.innerHTML = meds.map(m => 
+        <li><span>${m.name}</span> - ${m.time} (${m.dosage || "no dosage"})
+        <button onclick="deleteMedicine('${m._id}')">🗑 Delete</button>
+        </li>
+      ).join("");
+    }
+
+    async function deleteMedicine(id) {
+  const token = localStorage.getItem("token");
+  await fetch(`${API_URL}/medicine/${id}`, {
+    method: "DELETE",
+    headers: { "x-auth-token": token }
+  });
+  fetchMedicines();
+}
+
+    document.getElementById("medicineForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = e.target.name.value;
+      const dosage = e.target.dosage.value;
+      const time = e.target.time.value;
+      const token = localStorage.getItem("token");
+
+      await fetch(`${API_URL}/medicine`, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "x-auth-token": token
+        },
+        body: JSON.stringify({ name, dosage, time })
+      });
+      fetchMedicines();
+      e.target.reset();
+    });
+
+    if (Notification.permission !== "granted") {
+  Notification.requestPermission();
+}
+
+// Local reminder check
+setInterval(() => {
+  const now = new Date();
+  const currentTime = now.toTimeString().slice(0,5);
+  document.querySelectorAll("#medicineList li").forEach(li => {
+    if (li.innerText.includes(currentTime)) {
+      new Notification("💊 Medicine Reminder", {
+        body: "Time to take your medicine!",
+        icon: "https://img.icons8.com/color/48/pill.png"
+      });
+    }
+  });
+}, 60000);
+
+    fetchMedicines();
+  </script>
+</body>
+</html>

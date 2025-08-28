@@ -380,3 +380,83 @@ form.sign-up-form{
         left: 50%;
     }
 }
+
+/* ============================
+   DASHBOARD PAGE STYLES
+============================ */
+body.dashboard {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%);
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #333;
+}
+
+.dashboard-container {
+    background: #fff;
+    margin-top: 50px;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    width: 90%;
+    max-width: 600px;
+}
+
+.dashboard-container h2 {
+    text-align: center;
+    color: #4481eb;
+    margin-bottom: 20px;
+}
+
+#medicineForm {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+#medicineForm input, 
+#medicineForm button {
+    flex: 1 1 calc(50% - 10px);
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 1rem;
+}
+
+#medicineForm button {
+    background: #4481eb;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+#medicineForm button:hover {
+    background: #366ed8;
+}
+
+#medicineList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#medicineList li {
+    background: #f0f4ff;
+    margin: 10px 0;
+    padding: 12px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#medicineList li span {
+    font-weight: bold;
+    color: #4481eb;
+}
