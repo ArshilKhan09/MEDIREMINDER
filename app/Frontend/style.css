@@ -265,7 +265,7 @@ form.sign-up-form{
     opacity: 1;
 }
 
-@media (max-width: 870){
+@media (max-width: 870px){
     .container{
         min-height: 800px;
         height: 100vh;
@@ -548,4 +548,4 @@ form button:hover {
   form input, form button {
     width: 100%;
   }
-}
+}   

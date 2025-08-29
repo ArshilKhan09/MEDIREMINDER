@@ -7,19 +7,19 @@ const Medicine = require("./models/Medicine");
 const sendReminder = require("./utils/mailer");
 const dotenv = require("dotenv");
 const path = require("path");
-
 const cors = require("cors");
 
+dotenv.config();
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const authRoutes = require("./routes/auth");
+const medicineRoutes = require("./routes/medicine");
+
 app.use("/api/auth", authRoutes);
-
-dotenv.config();
-
+app.use("/api/medicine", medicineRoutes);
 
 
 app.use(express.static(path.join(__dirname, "../Frontend")));
@@ -33,11 +33,11 @@ cron.schedule("* * * * *", async () => {
   const currentTime = now.toTimeString().slice(0,5); // HH:MM
 
   try {
-    const medicines = await Medicine.find({ time: currentTime }).populate("userId");
+    const medicines = await Medicine.find({ time: currentTime }).populate("user");
     for (let med of medicines) {
-      if (med.userId && med.userId.email) {
-        await sendReminder(med.userId.email, med);
-        console.log(`📧 Reminder sent to ${med.userId.email} for ${med.name}`);
+      if (med.user && med.user.email) {
+        await sendReminder(med.user.email, med);
+        console.log(`📧 Reminder sent to ${med.user.email} for ${med.name}`);
       }
     }
   } catch (err) {
@@ -50,7 +50,7 @@ mongoose.connect(process.env.MONGO_URI, {
     useUnifiedTopology: true
 })
 .then(() => console.log("✅ MongoDB Atlas Connected"))
-.catch(err => console.error("❌ Connection error:", err));
+.catch((err) => console.error("❌ Connection error:", err));
 
 app.get("/", (req, res) => {
     res.send("MediReminder connected to MongoDB ✅");

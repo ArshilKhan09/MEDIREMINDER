@@ -6,6 +6,10 @@ const Medicine = require("../models/Medicine");
 // Add medicine
 router.post("/", auth, async (req, res) => {
   try {
+    console.log("👉 Incoming add medicine request");
+    console.log("Request body:", req.body);
+    console.log("Authenticated user:", req.user);
+
     const { name, time, dosage } = req.body;
 
     if (!name || !time) {
@@ -22,8 +26,8 @@ router.post("/", auth, async (req, res) => {
     await medicine.save();
     res.json(medicine);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
+    console.error("❌ Add medicine error:", err);
+    res.status(500).json({ error: "Server error", details: err.message });
   }
 });
 

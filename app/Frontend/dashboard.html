@@ -47,13 +47,9 @@
     // ---------- Medicines ----------
     async function fetchMedicines() {
       try {
-        const res = await fetch(`${API_URL}/medicines`, {
-          method: "POST",
-          headers: { 
-            "Content-Type": "application/json",
-            "x-auth-token": token
-          },
-           body: JSON.stringify({ name, time, dosage })
+        const res = await fetch(`${API_URL}/medicine`, {   // ✅ GET medicines
+          method: "GET",
+          headers: { "x-auth-token": token }
         });
         const meds = await res.json();
         const list = document.getElementById("medicineList");
@@ -75,7 +71,7 @@
       const dosage = document.getElementById("medicineDosage").value;
 
       try {
-        const res = await fetch(`${API_URL}/medicines`, {
+        const res = await fetch(`${API_URL}/medicine`, {   // ✅ POST medicine
           method: "POST",
           headers: { 
             "Content-Type": "application/json",
@@ -87,7 +83,8 @@
           document.getElementById("medicineForm").reset();
           fetchMedicines();
         } else {
-          alert("❌ Failed to add medicine");
+          const errData = await res.json();
+          alert("❌ Failed to add medicine: " + (errData.error || "Unknown error"));
         }
       } catch (err) {
         console.error(err);
@@ -96,7 +93,7 @@
 
     async function deleteMedicine(id) {
       try {
-        await fetch(`${API_URL}/medicines/${id}`, {
+        await fetch(`${API_URL}/medicine/${id}`, {   // ✅ DELETE medicine
           method: "DELETE",
           headers: { "x-auth-token": token }
         });
