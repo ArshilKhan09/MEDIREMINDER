@@ -1,93 +1,79 @@
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 
-// ✅ Create transporter
+// Create transporter with Gmail SMTP
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
+    pass: process.env.EMAIL_PASS
+  }
 });
 
-// ✅ Generic send function
-async function sendMail(to, subject, text, html) {
-  const mailOptions = {
-    from: `"MediReminder" <${process.env.EMAIL_USER}>`,
-    to,
-    subject,
-    text,
-    html, // ✅ must be passed explicitly
-  };
-
+/**
+ * Send medicine reminder email
+ * @param {string} email - User's email
+ * @param {object} medicine - Medicine object {name, time, dosage}
+ */
+async function sendReminder(email, medicine) {
   try {
-    await transporter.sendMail(mailOptions);
-    console.log(`📧 Mail sent to ${to}: ${subject}`);
+    await transporter.sendMail({
+      from: `"MediReminder 💊" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: `💊 Reminder: Take your ${medicine.name}`,
+      text: `Hello! It's time to take your medicine:
+- Name: ${medicine.name}
+- Time: ${medicine.time}
+- Dosage: ${medicine.dosage || "N/A"}
+
+Stay healthy with MediReminder!`
+    });
+    console.log(`📧 Reminder sent to ${email} for ${medicine.name}`);
   } catch (err) {
-    console.error("❌ Mail send failed:", err.message);
-    throw err;
+    console.error("❌ Failed to send reminder:", err);
   }
 }
 
-// ======================= Reminder Email =======================
-async function sendReminder(email, med) {
-  const subject = `Don't forget to take your medicine: ${med.name} at ${med.time}`;
-  const text = `Hi,\n\nIt's time to take your medicine:\n\nName: ${med.name}\nTime: ${med.time}\nDosage: ${med.dosage || "N/A"}\n\nStay healthy!\n\n- MediReminder Team`;
-
-  const html = `
-    <h2>⏰ Medicine Reminder</h2>
-    <p>It's time to take your medicine:</p>
-    <ul>
-      <li><b>Name:</b> ${med.name}</li>
-      <li><b>Time:</b> ${med.time}</li>
-      <li><b>Dosage:</b> ${med.dosage || "N/A"}</li>
-    </ul>
-    <p>Stay healthy!<br>- MediReminder Team</p>
-  `;
-
-  return sendMail(email, subject, text, html);
-}
-
-// ======================= Password Reset Email =======================
-async function sendPasswordReset(email, resetLink) {
-  const subject = "MediReminder - Password Reset Request";
-  const text = `Hi,\n\nYou requested to reset your MediReminder password.\nClick the link below (valid for 15 minutes):\n\n${resetLink}\n\nIf you did not request this, ignore this email.\n\n- MediReminder Team`;
-
-  // ✅ Always define html before sending
-  const html = `
-    <h2>🔑 Password Reset Request</h2>
-    <p>You requested to reset your MediReminder password.</p>
-    <p>
-      Click the button below (valid for 15 minutes):
-    </p>
-    <p>
-      <a href="${resetLink}" target="_blank" 
-         style="background:#42a5f5; color:#fff; padding:10px 20px; text-decoration:none; border-radius:6px;">
-         Reset Password
-      </a>
-    </p>
-    <p>If you did not request this, you can safely ignore this email.</p>
-    <br>
-    <p>- MediReminder Team</p>
-  `;
-
-  return sendMail(email, subject, text, html);
-}
-
-// ======================= Login Alert Email =======================
+// ========== Login Alert Email ==========
 async function sendLoginAlert(email) {
-  const subject = "MediReminder - New Login Alert";
-  const text = `Hi,\n\nYou just logged into MediReminder.\nIf this wasn’t you, please reset your password immediately.\n\n- MediReminder Team`;
-
-  const html = `
-    <h2>🔔 New Login Alert</h2>
-    <p>You just logged into <b>MediReminder</b>.</p>
-    <p>If this wasn’t you, please reset your password immediately.</p>
-    <br>
-    <p>- MediReminder Team</p>
-  `;
-
-  return sendMail(email, subject, text, html);
+  try {
+    await transporter.sendMail({
+      from: `"MediReminder Security" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: "🔐 New Login Detected",
+      text: `Hello! A login to your MediReminder account was just detected.
+      
+If this was you, no action is required.  
+If this wasn’t you, please reset your password immediately.`
+    });
+    console.log(`📧 Login alert sent to ${email}`);
+  } catch (err) {
+    console.error("❌ Failed to send login alert:", err);
+  }
 }
 
-module.exports = { sendReminder, sendPasswordReset, sendLoginAlert };
+// ========== Password Reset ==========
+async function sendPasswordReset(email, resetToken) {
+  try {
+    const resetLink = `http://localhost:5000/reset-password.html?token=${resetToken}`;
+
+    await transporter.sendMail({
+      from: `"MediReminder Support" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: "🔑 Password Reset Request",
+      text: `You requested to reset your password.
+
+Click the link below to reset your password:
+${resetLink}
+
+If you did not request this, please ignore this email.`
+    });
+
+    console.log(`📧 Password reset email sent to ${email}`);
+  } catch (err) {
+    console.error("❌ Failed to send reset email:", err);
+  }
+}
+
+// Export all functions
+module.exports = { sendReminder, sendLoginAlert, sendPasswordReset };
