@@ -18,6 +18,12 @@ document.getElementById("signupForm").addEventListener("submit", async (e) => {
   const username = document.getElementById("signupUsername").value;
   const email = document.getElementById("signupEmail").value;
   const password = document.getElementById("signupPassword").value;
+  const confirmPassword = document.getElementById("signupConfirmPassword").value;
+
+  if (password !== confirmPassword) {
+    alert("❌ Passwords do not match");
+    return;
+  }
 
   try {
     const res = await fetch(`${API_URL}/auth/signup`, {
@@ -62,5 +68,56 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
   } catch (err) {
     console.error(err);
     alert("Error logging in");
+  }
+});
+
+
+// ===== Password Toggle =====
+document.querySelectorAll(".toggle-password").forEach(icon => {
+  icon.addEventListener("click", () => {
+    const input = document.getElementById(icon.dataset.target);
+    if (input.type === "password") {
+      input.type = "text";
+      icon.classList.remove("fa-eye");
+      icon.classList.add("fa-eye-slash");
+    } else {
+      input.type = "password";
+      icon.classList.remove("fa-eye-slash");
+      icon.classList.add("fa-eye");
+    }
+  });
+});
+
+// ===== Forgot Password Modal =====
+const forgotLink = document.getElementById("forgotPasswordLink");
+const modal = document.getElementById("forgotPasswordModal");
+const closeBtn = modal.querySelector(".close");
+
+forgotLink.addEventListener("click", () => modal.style.display = "block");
+closeBtn.addEventListener("click", () => modal.style.display = "none");
+window.addEventListener("click", (e) => {
+  if (e.target === modal) modal.style.display = "none";
+});
+
+document.getElementById("forgotPasswordForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = document.getElementById("resetEmail").value;
+
+  try {
+    const res = await fetch(`${API_URL}/auth/forgot-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      alert("✅ Reset link sent to your email!");
+      modal.style.display = "none";
+    } else {
+      alert("❌ " + (data.error || "Failed to send reset link"));
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Error sending reset link");
   }
 });

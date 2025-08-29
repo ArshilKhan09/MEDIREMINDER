@@ -549,3 +549,118 @@ form button:hover {
     width: 100%;
   }
 }   
+
+/* Password field toggle */
+.password-field {
+  position: relative;
+}
+.password-field .toggle-password {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #666;
+}
+
+/* Forgot password link */
+.forgot-link {
+  display: block;
+  margin: 10px 0;
+  font-size: 0.9rem;
+  color: #42a5f5;
+  cursor: pointer;
+}
+
+/* Modal styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+}
+.modal-content {
+  background: #fff;
+  margin: 15% auto;
+  padding: 20px;
+  width: 300px;
+  border-radius: 12px;
+  text-align: center;
+}
+.modal-content h3 { margin-bottom: 15px; }
+.modal-content .close {
+  float: right;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+/* ===== Reset Password Page ===== */
+.reset-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #42a5f5, #478ed1);
+  color: #fff;
+  padding: 20px;
+}
+
+.reset-container h1 {
+  margin-bottom: 20px;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.reset-card {
+  background: #fff;
+  color: #333;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+.reset-card h2 {
+  margin-bottom: 20px;
+  color: #1565c0;
+}
+
+.reset-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.reset-form input {
+  padding: 12px 14px;
+  border: 1px solid #d0d7de;
+  border-radius: 10px;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.3s, box-shadow 0.3s;
+}
+
+.reset-form input:focus {
+  border-color: #42a5f5;
+  box-shadow: 0 0 6px rgba(66,165,245,0.4);
+}
+
+.reset-form button {
+  padding: 12px;
+  background: #42a5f5;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.reset-form button:hover {
+  background: #1e88e5;
+}
